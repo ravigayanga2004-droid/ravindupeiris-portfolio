@@ -1,0 +1,11 @@
+{
+  "name": "ravindu-peiris-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Personal portfolio for Ravindu Peiris — security-minded developer and builder.",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "node build.mjs"
+  }
+}
