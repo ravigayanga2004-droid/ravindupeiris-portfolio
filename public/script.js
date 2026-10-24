@@ -28,3 +28,42 @@ filterButtons.forEach((button) => {
     });
   });
 });
+
+const progress = document.querySelector('.cinema-progress');
+const updateProgress = () => {
+  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+  if (progress) progress.style.width = `${scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0}%`;
+};
+window.addEventListener('scroll', updateProgress, { passive: true });
+updateProgress();
+
+window.addEventListener('pointermove', (event) => {
+  document.body.style.setProperty('--mx', `${(event.clientX / window.innerWidth) * 100}%`);
+  document.body.style.setProperty('--my', `${(event.clientY / window.innerHeight) * 100}%`);
+  const portrait = document.querySelector('[data-depth]');
+  if (portrait && window.innerWidth > 760) {
+    const y = (event.clientY / window.innerHeight - 0.5) * -18;
+    portrait.style.setProperty('--depth-y', `${y}px`);
+  }
+}, { passive: true });
+
+document.querySelectorAll('[data-tilt]').forEach((card) => {
+  card.addEventListener('pointermove', (event) => {
+    if (window.innerWidth < 760) return;
+    const rect = card.getBoundingClientRect();
+    const rotateX = ((event.clientY - rect.top) / rect.height - 0.5) * -4;
+    const rotateY = ((event.clientX - rect.left) / rect.width - 0.5) * 4;
+    card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.012)`;
+  });
+  card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+});
+
+const sections = [...document.querySelectorAll('main section[id]')];
+const navItems = [...document.querySelectorAll('.nav-links a')];
+const sectionObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (!entry.isIntersecting) return;
+    navItems.forEach((item) => item.style.color = item.getAttribute('href') === `#${entry.target.id}` ? 'var(--acid)' : '');
+  });
+}, { rootMargin: '-35% 0px -55% 0px' });
+sections.forEach((section) => sectionObserver.observe(section));
